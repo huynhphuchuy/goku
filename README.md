@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://travis-ci.org/joemccann/dillinger)
 
-Goku is a project prototype born to help construct a new microservice from scratch that save a lot of time to implement the project structure, infrastructure, etc... from the beginning. This contains of some major features:
+Goku is a project prototype born to help construct a new microservice from scratch that save a lot of time to implement the project structure, infrastructure, etc... from the beginning. This contains some major features:
 
 - Authentication
 - Session management
