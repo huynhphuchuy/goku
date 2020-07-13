@@ -1,0 +1,54 @@
+version: 2 # use CircleCI 2.0
+jobs: # basic units of work in a run
+  build: # runs not using Workflows must have a `build` job as entry point
+    docker: # run the steps with Docker
+      # CircleCI Go images available at: https://hub.docker.com/r/circleci/golang/
+      - image: circleci/golang:1.12
+      # CircleCI Mysql images available at: https://hub.docker.com/r/circleci/mysql/
+      - image: circleci/mysql:latest
+        environment: # environment variables for primary container
+          MYSQL_HOST: 127.0.0.1
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: gogin
+
+    parallelism: 1
+    steps: # steps that comprise the `build` job
+      - checkout
+      - run:
+          name: Setup environment
+          command: |
+            cp env/.env.test .env
+      - run:
+          # Our primary container isn't MYSQL so run a sleep command until it's ready.
+          name: Waiting for MySQL to be ready
+          command: |
+            for i in `seq 1 10`;
+            do
+              nc -z 127.0.0.1 3306 && echo Success && exit 0
+              echo -n .
+              sleep 1
+            done
+            echo Failed waiting for MySQL && exit 1
+      - run:
+          name: Build Executable
+          command: |
+            go build
+      - run:
+          name: Run Tests
+          command: |
+            go fmt ./...
+            go vet ./...
+            go test -v ./.../tests
+      - add_ssh_keys:
+          fingerprints:
+            - "e1:69:fe:79:44:8e:65:c9:4a:ed:96:62:96:46:81:c3"
+      - run:
+          name: Deploy Over SSH
+          command: |
+            ssh -o StrictHostKeyChecking=no "huynhphuchuy@hotmail.com"@"raw.msi.center" "Desktop\Projects\gogin\deploy.bat"
+
+workflows:
+  version: 2
+  build-workflow:
+    jobs:
+      - build
